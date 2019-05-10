@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>Logout</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+        
+        <style>
+            #logoutForm{
+                text-align: center;
+                margin-top: 100px;
+            }
+            
+        </style>
+    </h:head>
+    <h:body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <h:outputLink styleClass="navbar-brand" value="index.xhtml">Home</h:outputLink>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <h:outputLink styleClass="nav-item nav-link active" value="guestbook.xhtml">Guestbook</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!Login.loggedin}">Login</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="register.xhtml">Register</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{Login.loggedin}"> Logout</h:outputLink>
+                </div>
+            </div>
+        </nav>
+        
+        <h:form id="logoutForm">
+            <h:commandButton value="Logout" styleClass="btn btn-info" action="#{Login.logout()}"/>
+        </h:form>
+        
+        
+    </h:body>
+</html>
+
