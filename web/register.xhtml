@@ -2,12 +2,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>Register</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
-         <script src="https://www.google.com/recaptcha/api.js"></script>
+        <script src="https://www.google.com/recaptcha/api.js"></script>
+
+        <f:metadata>
+            <f:event listener="#{Register.activateAccount()}"
+                     type="preRenderView"></f:event>
+            <f:viewParam name="uuid"
+                         value="#{Register.uuid}" />
+        </f:metadata>
 
         <style>
             .register-form {
@@ -43,10 +51,13 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <h:outputLink styleClass="nav-item nav-link active" value="guestbook.xhtml">Guestbook</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!Login.loggedin}">Login</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!SessionBean.loggedIn}">Login</h:outputLink>
                     <h:outputLink styleClass="nav-item nav-link" value="register.xhtml">Register</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{Login.loggedin}"> Logout</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{SessionBean.loggedIn}"> Logout</h:outputLink>
                 </div>
+            </div>
+            <div class="nav navbar-nav navbar-right">
+                <h:outputLabel styleClass="nav-item nav-link" value="Logged in as: #{SessionBean.account.firstname} #{SessionBean.account.lastname}" rendered="#{SessionBean.loggedIn}" />
             </div>
         </nav>
 
@@ -54,30 +65,33 @@
             <h:form>
                 <h2 class="text-center">Account erstellen</h2>       
                 <div class="form-group">
-                    <h:inputText styleClass="form-control" a:placeholder="Vorname" required="required"/>
+                    <h:inputText styleClass="form-control" a:placeholder="Vorname" required="true" value="#{Register.firstname}"/>
                 </div>
                 <div class="form-group">
-                    <h:inputText styleClass="form-control" a:placeholder="Nachname" required="required"/>
+                    <h:inputText styleClass="form-control" a:placeholder="Nachname" required="true" value="#{Register.lastname}"/>
                 </div>
                 <div class="form-group">
-                    <h:inputText styleClass="form-control" a:placeholder="Email" required="required"/>
+                    <h:inputText styleClass="form-control" a:placeholder="Email" required="true" value="#{Register.email}"/>
                 </div>
                 <div class="form-group">
-                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort" required="required"/>
+                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort" required="true" value="#{Register.password}"/>
                 </div>
                 <div class="form-group">
-                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort bestätigen" required="required"/>
+                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort bestätigen" required="true" value="#{Register.passwordCheck}"/>
                 </div>
                 <div class="form-group">
-                    <h:commandButton styleClass="btn btn-primary btn-block" value="Log in" action="#{Login.login()}"/>
+                    <div class="g-recaptcha" data-sitekey="6LfUJaIUAAAAAFZoZMujTCXUUw_cGkA6urZAJGOE"></div>   
+                </div>
+                <div class="form-group">
+                    <h:commandButton styleClass="btn btn-primary btn-block" value="Registrieren" action="#{Register.submit_form()}"/>
                 </div>      
-                
+
             </h:form>
-            
-            
+
+
         </div>
-        
-        <div class="g-recaptcha" data-sitekey="6LfUJaIUAAAAAFZoZMujTCXUUw_cGkA6urZAJGOE"></div>
+
+
 
 
 

@@ -42,10 +42,13 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <h:outputLink styleClass="nav-item nav-link active" value="guestbook.xhtml">Guestbook</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!Login.loggedin}">Login</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!SessionBean.loggedIn}">Login</h:outputLink>
                     <h:outputLink styleClass="nav-item nav-link" value="register.xhtml">Register</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{Login.loggedin}"> Logout</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{SessionBean.loggedIn}"> Logout</h:outputLink>
                 </div>
+            </div>
+            <div class="nav navbar-nav navbar-right">
+                <h:outputLabel styleClass="nav-item nav-link active" value="Logged in as: #{SessionBean.account.firstname} #{SessionBean.account.lastname}" rendered="#{SessionBean.loggedIn}"/>
             </div>
         </nav>
 
@@ -53,10 +56,10 @@
             <h:form>
                 <h2 class="text-center">Log In</h2>       
                 <div class="form-group">
-                    <h:inputText styleClass="form-control" a:placeholder="Name" required="required"/>
+                    <h:inputText styleClass="form-control" a:placeholder="Email" required="true" value="#{Login.email}"/>
                 </div>
                 <div class="form-group">
-                    <h:inputText styleClass="form-control" a:placeholder="Passwort" required="required"/>
+                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort" required="true" value="#{Login.password}"/>
                 </div>
                 <div class="form-group">
                     <h:commandButton styleClass="btn btn-primary btn-block" value="Log in" action="#{Login.login()}"/>

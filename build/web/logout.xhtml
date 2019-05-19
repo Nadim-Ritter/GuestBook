@@ -26,10 +26,13 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <h:outputLink styleClass="nav-item nav-link active" value="guestbook.xhtml">Guestbook</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!Login.loggedin}">Login</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!SessionBean.loggedIn}">Login</h:outputLink>
                     <h:outputLink styleClass="nav-item nav-link" value="register.xhtml">Register</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{Login.loggedin}"> Logout</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{SessionBean.loggedIn}"> Logout</h:outputLink>
                 </div>
+            </div>
+            <div class="nav navbar-nav navbar-right">
+                <h:outputLabel styleClass="nav-item nav-link active" value="Logged in as: #{SessionBean.account.firstname} #{SessionBean.account.lastname}" rendered="#{SessionBean.loggedIn}"/>
             </div>
         </nav>
         

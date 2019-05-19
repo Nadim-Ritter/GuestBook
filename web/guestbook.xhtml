@@ -2,11 +2,72 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"	
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Guestbook</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+
+        <f:metadata>
+            <f:event listener="#{guestbookHandler.loadGuestBookList()}"
+                     type="preRenderView"></f:event>
+        </f:metadata>
+
+        <script type = "text/javascript">
+            var showCheckedValue = function () {
+                console.log("1: " + document.getElementById('j_idt21:goodBox').checked);
+                console.log("2: " + document.getElementById('j_idt21:okeyBox').checked);
+                console.log("3: " + document.getElementById('j_idt21:badBox').checked);
+            };
+            
+            var unceckBoxes = function(var_id){
+                if(document.getElementById(var_id).checked){
+                    if('j_idt21:goodBox' !== var_id) document.getElementById('j_idt21:goodBox').checked = false;
+                    if('j_idt21:okeyBox' !== var_id) document.getElementById('j_idt21:okeyBox').checked = false;
+                    if('j_idt21:badBox' !== var_id) document.getElementById('j_idt21:badBox').checked = false;
+                }
+            };
+            
+            var getBoxValues = function(){
+                PF('testVar').jq.val("test");
+            };
+        </script>
+
+        <style>
+            .newentry-form {
+                width: 500px;
+                margin: 50px auto;
+            }
+            .newentry-form form {
+                margin-bottom: 15px;
+                background: #f7f7f7;
+                box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+                padding: 30px;
+            }
+            .newentry-form h2 {
+                margin: 0 0 15px;
+            }
+            .form-control, .btn {
+                min-height: 38px;
+                border-radius: 2px;
+            }
+            .btn {        
+                font-size: 15px;
+                font-weight: bold;
+            }
+
+            #table{
+                text-align: center;
+                margin: auto;
+            }
+
+            .img{
+                width: 25%;
+            }
+        </style>
     </h:head>
     <h:body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -15,15 +76,72 @@
                     aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">  
                 <div class="navbar-nav">
                     <h:outputLink styleClass="nav-item nav-link active" value="guestbook.xhtml">Guestbook</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!Login.loggedin}">Login</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="login.xhtml" rendered="#{!SessionBean.loggedIn}">Login</h:outputLink>
                     <h:outputLink styleClass="nav-item nav-link" value="register.xhtml">Register</h:outputLink>
-                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{Login.loggedin}"> Logout</h:outputLink>
+                    <h:outputLink styleClass="nav-item nav-link" value="logout.xhtml" rendered="#{SessionBean.loggedIn}"> Logout</h:outputLink>
                 </div>
             </div>
+            <div class="nav navbar-nav navbar-right">
+                <h:outputLabel styleClass="nav-item nav-link active" value="Logged in as: #{SessionBean.account.firstname} #{SessionBean.account.lastname}" rendered="#{SessionBean.loggedIn}"/>
+            </div>
         </nav>
+
+        <div class="newentry-form">
+            <h:form rendered="#{Login.sessionBean.loggedIn}">
+                <h2 class="text-center">Neuer Eintrag ins Gästebuch erstellen</h2>    
+
+                <!--status radio buttons -->
+                <h:panelGrid columns="3">   
+
+                    <h:column>
+                        <h:selectBooleanCheckbox onclick="unceckBoxes(this.id)" value="#{guestbookHandler.statusGood}" id="goodBox" />
+                        <h:outputLabel for="goodBox">
+                            <p:graphicImage styleClass="img" url="images/good.png"/> 
+                        </h:outputLabel>
+                    </h:column>
+
+                    <h:column>
+                        <h:selectBooleanCheckbox onclick="unceckBoxes(this.id)" value="#{guestbookHandler.statusOkey}" id="okeyBox" />
+                        <h:outputLabel for="okeyBox">
+                            <p:graphicImage styleClass="img" url="images/okey.png"/> 
+                        </h:outputLabel>
+                    </h:column>
+
+                    <h:column>
+                        <h:selectBooleanCheckbox onclick="unceckBoxes(this.id)" value="#{guestbookHandler.statusBad}" id="badBox" />
+                        <h:outputLabel for="badBox">
+                            <p:graphicImage styleClass="img" url="images/bad.png"/> 
+                        </h:outputLabel>
+                    </h:column>
+                </h:panelGrid>
+                <!-- -->
+
+                <div class="form-group">
+                    <h:inputTextarea styleClass="form-control" a:placeholder="Text" required="true" value="#{guestbookHandler.text}"/>
+                </div>
+                <div class="form-group">
+                    <h:commandButton styleClass="btn btn-primary btn-block" value="Senden" action="#{guestbookHandler.createGuestBookEntry()}"/>
+                </div>      
+            </h:form>
+        </div>  
+
+        <h2 class="text-center">Gästebuch Einträge</h2>
+        <ui:repeat var="entry" value="#{guestbookHandler.guestBookEntries}">
+            <div class="newentry-form">
+                <h:form>
+                    <div class="form-group">
+                        <h:inputText styleClass="form-control" disabled="true" value="#{entry.authorFirstame} #{entry.authorLastname}" />
+                    </div> 
+                    <div class="form-group">
+                        <h:inputTextarea styleClass="form-control" disabled="true" value="#{entry.text}"/>
+                    </div>   
+                </h:form>
+            </div>
+        </ui:repeat>
+
     </h:body>
 </html>
 
