@@ -10,11 +10,13 @@ public class GuestBookEntry {
     private String authorFirstame;
     private String authorLastname;
     private String text;
+    private String status;
 
-    public GuestBookEntry(String authorFirstame, String authorLastname, String text) {
+    public GuestBookEntry(String authorFirstame, String authorLastname, String text, String status) {
         this.authorFirstame = authorFirstame;
         this.authorLastname = authorLastname;
         this.text = text;
+        this.status = status;
     }
 
     public String getAuthorFirstame() {
@@ -40,6 +42,16 @@ public class GuestBookEntry {
     public void setText(String text) {
         this.text = text;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
+    
 
     
     

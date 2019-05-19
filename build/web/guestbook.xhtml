@@ -22,16 +22,30 @@
                 console.log("2: " + document.getElementById('j_idt21:okeyBox').checked);
                 console.log("3: " + document.getElementById('j_idt21:badBox').checked);
             };
-            
-            var unceckBoxes = function(var_id){
-                if(document.getElementById(var_id).checked){
-                    if('j_idt21:goodBox' !== var_id) document.getElementById('j_idt21:goodBox').checked = false;
-                    if('j_idt21:okeyBox' !== var_id) document.getElementById('j_idt21:okeyBox').checked = false;
-                    if('j_idt21:badBox' !== var_id) document.getElementById('j_idt21:badBox').checked = false;
+
+            var uncheckBoxes = function (var_id) {
+                if (document.getElementById(var_id).checked) {
+                    document.getElementById(var_id + "Img").style.background = "#bafdff";
+
+                    if ('j_idt21:goodBox' !== var_id) {
+                        document.getElementById('j_idt21:goodBox').checked = false;
+                        document.getElementById('j_idt21:goodBoxImg').style.background = "";
+                    }
+
+                    if ('j_idt21:okeyBox' !== var_id) {
+                        document.getElementById('j_idt21:okeyBox').checked = false;
+                        document.getElementById('j_idt21:okeyBoxImg').style.background = "";
+                    }
+
+                    if ('j_idt21:badBox' !== var_id) {
+                        document.getElementById('j_idt21:badBox').checked = false;
+                        document.getElementById('j_idt21:badBoxImg').style.background = "";
+                    }
+
                 }
             };
-            
-            var getBoxValues = function(){
+
+            var getBoxValues = function () {
                 PF('testVar').jq.val("test");
             };
         </script>
@@ -67,6 +81,11 @@
             .img{
                 width: 25%;
             }
+            
+            .imgOutput{
+                width: 15%;
+            }
+
         </style>
     </h:head>
     <h:body>
@@ -94,37 +113,40 @@
                 <h2 class="text-center">Neuer Eintrag ins Gästebuch erstellen</h2>    
 
                 <!--status radio buttons -->
-                <h:panelGrid columns="3">   
+                <br/>
+                <h6 class="text-center">Wählen sie ihren Status</h6>   
+                
+                    <h:panelGrid styleClass="text-center" columns="3">   
+                        <h:column>
+                            <h:selectBooleanCheckbox style="display: none" onclick="uncheckBoxes(this.id)" value="#{guestbookHandler.statusGood}" id="goodBox" />
+                            <h:outputLabel for="goodBox">
+                                <p:graphicImage id="goodBoxImg" styleClass="img" url="images/good.png"/> 
+                            </h:outputLabel>
+                        </h:column>
 
-                    <h:column>
-                        <h:selectBooleanCheckbox onclick="unceckBoxes(this.id)" value="#{guestbookHandler.statusGood}" id="goodBox" />
-                        <h:outputLabel for="goodBox">
-                            <p:graphicImage styleClass="img" url="images/good.png"/> 
-                        </h:outputLabel>
-                    </h:column>
+                        <h:column>
+                            <h:selectBooleanCheckbox style="display: none" onclick="uncheckBoxes(this.id)" value="#{guestbookHandler.statusOkey}" id="okeyBox" />
+                            <h:outputLabel for="okeyBox">
+                                <p:graphicImage id="okeyBoxImg" styleClass="img" url="images/okey.png"/> 
+                            </h:outputLabel>
+                        </h:column>
 
-                    <h:column>
-                        <h:selectBooleanCheckbox onclick="unceckBoxes(this.id)" value="#{guestbookHandler.statusOkey}" id="okeyBox" />
-                        <h:outputLabel for="okeyBox">
-                            <p:graphicImage styleClass="img" url="images/okey.png"/> 
-                        </h:outputLabel>
-                    </h:column>
+                        <h:column>
+                            <h:selectBooleanCheckbox style="display: none" onclick="uncheckBoxes(this.id)" value="#{guestbookHandler.statusBad}" id="badBox" />
+                            <h:outputLabel for="badBox">
+                                <p:graphicImage id="badBoxImg" styleClass="img" url="images/bad.png"/> 
+                            </h:outputLabel>
+                        </h:column>
+                    </h:panelGrid>
+                    <!-- -->
 
-                    <h:column>
-                        <h:selectBooleanCheckbox onclick="unceckBoxes(this.id)" value="#{guestbookHandler.statusBad}" id="badBox" />
-                        <h:outputLabel for="badBox">
-                            <p:graphicImage styleClass="img" url="images/bad.png"/> 
-                        </h:outputLabel>
-                    </h:column>
-                </h:panelGrid>
-                <!-- -->
-
-                <div class="form-group">
-                    <h:inputTextarea styleClass="form-control" a:placeholder="Text" required="true" value="#{guestbookHandler.text}"/>
-                </div>
-                <div class="form-group">
-                    <h:commandButton styleClass="btn btn-primary btn-block" value="Senden" action="#{guestbookHandler.createGuestBookEntry()}"/>
-                </div>      
+                    <div class="form-group">
+                        <h:inputTextarea styleClass="form-control" a:placeholder="Text" required="true" value="#{guestbookHandler.text}"/>
+                    </div>
+                    <div class="form-group">
+                        <h:commandButton styleClass="btn btn-primary btn-block" value="Senden" action="#{guestbookHandler.createGuestBookEntry()}"/>
+                    </div>  
+                    <p:messages/>
             </h:form>
         </div>  
 
@@ -135,6 +157,9 @@
                     <div class="form-group">
                         <h:inputText styleClass="form-control" disabled="true" value="#{entry.authorFirstame} #{entry.authorLastname}" />
                     </div> 
+                    <div class="text-center">
+                        <h:graphicImage styleClass="imgOutput" value="images/#{entry.status}.png"/>
+                    </div>
                     <div class="form-group">
                         <h:inputTextarea styleClass="form-control" disabled="true" value="#{entry.text}"/>
                     </div>   

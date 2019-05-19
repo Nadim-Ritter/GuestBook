@@ -52,7 +52,8 @@ public class GuestBookHandler {
             else if (statusOkey) status = "okey";
             else if (statusBad) status = "bad";
             
-
+            System.out.println(status);
+            
             if (!status.equals("nothing")) {
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
@@ -100,7 +101,7 @@ public class GuestBookHandler {
                 Statement stmt2 = connection.createStatement();
                 ResultSet resultSet2 = stmt2.executeQuery("SELECT * FROM `account` WHERE `id` = " + resultSet.getInt("accountID"));
                 while (resultSet2.next()) {
-                    GuestBookEntry entry = new GuestBookEntry(resultSet2.getString("firstname"), resultSet2.getString("lastname"), resultSet.getString("text"));
+                    GuestBookEntry entry = new GuestBookEntry(resultSet2.getString("firstname"), resultSet2.getString("lastname"), resultSet.getString("text"), resultSet.getString("status"));
                     guestBookEntries.add(entry);
                 }
                 resultSet2.close();
