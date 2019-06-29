@@ -40,7 +40,42 @@
                 font-size: 15px;
                 font-weight: bold;
             }
+
+            .radioGroup{
+                margin-left: 100px;
+            }
+
+            #radioContainer{
+                margin-bottom: 10px;
+            }
         </style>
+
+        <script type="text/javascript">
+            let adminTrue = false;
+            
+            let uncheckBoxes = function (var_id) {
+                let securityCodeField = document.getElementById("securityCodeField");
+
+                if (var_id === "benutzerRadio") {
+                    securityCodeField.style.display = 'none';
+                } else if (var_id === "adminRadio") {
+                    console.log("test");
+                    adminTrue = true;
+                    securityCodeField.style.display = 'inline';
+                } else if (var_id === "leserRadio") {
+                    securityCodeField.style.display = 'none';
+
+                }
+            };
+
+            let getVars = function () {
+                if(adminTrue){
+                    document.getElementById("j_idt22:x").value = true;
+                }else{
+                    document.getElementById("j_idt22:x").value = false;
+                }
+            };
+        </script>
     </h:head>
     <h:body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -64,7 +99,24 @@
 
         <div class="register-form">
             <h:form>
-                <h2 class="text-center">Account erstellen</h2>       
+                <h:inputHidden id="x" value="#{Register.adminRole}" />
+                <h2 class="text-center">Account erstellen</h2>  
+                <!-- role radio buttons -->
+                <div id="radioContainer">
+                    <div class="custom-control custom-radio radioGroup">
+                        <input type="radio" class="custom-control-input" id="benutzerRadio" onclick="uncheckBoxes(this.id)" name="radios"/>
+                        <label class="custom-control-label" for="benutzerRadio">Benutzer</label>
+                    </div>
+                    <div class="custom-control custom-radio radioGroup">
+                        <input type="radio" class="custom-control-input" id="adminRadio" onclick="uncheckBoxes(this.id)" name="radios"/>
+                        <label class="custom-control-label" for="adminRadio">Admin</label>
+                    </div>
+                    <div class="custom-control custom-radio radioGroup">
+                        <input type="radio" class="custom-control-input" id="leserRadio" onclick="uncheckBoxes(this.id)" name="radios"/>
+                        <label class="custom-control-label" for="leserRadio">Leser</label>
+                    </div>
+                </div>
+                <!-- ======================= -->
                 <div class="form-group">
                     <h:inputText styleClass="form-control" a:placeholder="Vorname" required="true" value="#{Register.firstname}"/>
                 </div>
@@ -80,11 +132,14 @@
                 <div class="form-group">
                     <h:inputSecret styleClass="form-control" a:placeholder="Passwort bestätigen" required="true" value="#{Register.passwordCheck}"/>
                 </div>
+                <div class="form-group" id="securityCodeField" >
+                    <h:inputText styleClass="form-control" a:placeholder="Security Code" required="true"/>
+                </div>
                 <div class="form-group">
                     <div class="g-recaptcha" data-sitekey="6LfUJaIUAAAAAFZoZMujTCXUUw_cGkA6urZAJGOE"></div>   
                 </div>
                 <div class="form-group">
-                    <h:commandButton styleClass="btn btn-primary btn-block" value="Registrieren" action="#{Register.submit_form()}"/>
+                    <h:commandButton styleClass="btn btn-primary btn-block" value="Registrieren" onclick="getVars()" action="#{Register.submit_form()}"/>
                 </div>      
                 <p:messages/>
             </h:form>

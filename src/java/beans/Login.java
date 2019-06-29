@@ -13,6 +13,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import objects.Account;
+import passwordencryption.PwEncryptionTool;
 
 @ManagedBean(name = "Login")
 @SessionScoped
@@ -42,7 +43,7 @@ public class Login {
         this.loggedin = false;
     }
 
-    public String login() {
+    public String login() throws Exception {
 
         Account currentAccount = checkCredentials();
         if (currentAccount.getFirstname() != null) {
@@ -63,7 +64,7 @@ public class Login {
 
     }
 
-    public Account checkCredentials() {
+    public Account checkCredentials() throws Exception {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -73,8 +74,8 @@ public class Login {
 
             Statement stmt = connection.createStatement();
 
-            System.out.println("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + password + "' AND `activated` = 1");
-            ResultSet resultSet = stmt.executeQuery("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + password + "' AND `activated` = 1");
+            System.out.println("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + PwEncryptionTool.decrypt(password) + "' AND `activated` = 1");
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + PwEncryptionTool.decrypt(password) + "' AND `activated` = 1");
             Account account = new Account();
 
             while (resultSet.next()) {

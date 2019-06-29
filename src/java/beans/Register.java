@@ -16,6 +16,7 @@ import javax.faces.context.FacesContext;
 import javax.mail.MessagingException;
 
 import objects.Account;
+import passwordencryption.PwEncryptionTool;
 
 @ManagedBean(name = "Register")
 @RequestScoped
@@ -27,6 +28,7 @@ public class Register {
     private String password;
     private String passwordCheck;
     private String uuid;
+    private boolean adminRole;
 
     public String submit_form() {
         if (password.equals(passwordCheck)) {
@@ -57,7 +59,9 @@ public class Register {
 
     }
 
-    public void createAccount() throws SQLException, MessagingException {
+    public void createAccount() throws SQLException, MessagingException, Exception {
+        
+        System.out.println();
 
         UUID uuid = UUID.randomUUID();
 
@@ -73,16 +77,16 @@ public class Register {
         }
     }
 
-    public boolean insertIntoDB(Account account) throws SQLException, MessagingException {
+    public boolean insertIntoDB(Account account) throws SQLException, MessagingException, Exception {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             String connectionURL = "jdbc:mysql://localhost/guestbook";
             Connection connection = DriverManager.getConnection(connectionURL, "root", "");
-
+            
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + account.getPassword() + "', " + 0 + ", '" + account.getUuid() + "')");
-            System.out.println("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + account.getPassword() + "', " + 0 + ", '" + account.getUuid() + "')");
+            stmt.executeUpdate("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + PwEncryptionTool.encrypt(account.getPassword()) + "', " + 0 + ", '" + account.getUuid() + "')");
+            System.out.println("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + PwEncryptionTool.encrypt(account.getPassword()) + "', " + 0 + ", '" + account.getUuid() + "')");
 
             MailHandler mailHandler = new MailHandler();
             mailHandler.sendConfirmationMail(account);
@@ -174,5 +178,15 @@ public class Register {
     public void setPasswordCheck(String passwordCheck) {
         this.passwordCheck = passwordCheck;
     }
+
+    public boolean isAdminRole() {
+        return adminRole;
+    }
+
+    public void setAdminRole(boolean adminRole) {
+        this.adminRole = adminRole;
+    }
+    
+    
 
 }
