@@ -10,6 +10,7 @@ public class Account {
     private boolean activated;
     private String uuid;
     private int accountId;
+    private String role;
     
     public Account(){
         
@@ -21,13 +22,14 @@ public class Account {
         this.email = email;
     }
 
-    public Account(String firstname, String lastname, String email, String password, boolean activated, String uuid) {
+    public Account(String firstname, String lastname, String email, String password, boolean activated, String uuid, String role) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
         this.activated = activated;
         this.uuid = uuid;
+        this.role = role;
     }
 
     public String getFirstname() {
@@ -85,6 +87,16 @@ public class Account {
     public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+    
+    
     
     
     

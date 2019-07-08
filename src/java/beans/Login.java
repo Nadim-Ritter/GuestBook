@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -13,6 +14,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import objects.Account;
+import objects.SaltAndPepper;
 import passwordencryption.PwEncryptionTool;
 
 @ManagedBean(name = "Login")
@@ -59,6 +61,10 @@ public class Login {
         } else {
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("Das Login ist fehlgeschlagen"));
+            
+            Logger logger = Logger.getLogger(Login.class.getName());
+            logger.warning("Fehlgeschlagener Login Versuch: " + email);
+            
             return null;
         }
 
@@ -73,9 +79,9 @@ public class Login {
             Connection connection = DriverManager.getConnection(connectionURL, "root", "");
 
             Statement stmt = connection.createStatement();
-
-            System.out.println("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + PwEncryptionTool.decrypt(password) + "' AND `activated` = 1");
-            ResultSet resultSet = stmt.executeQuery("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + PwEncryptionTool.decrypt(password) + "' AND `activated` = 1");
+            
+            System.out.println("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + PwEncryptionTool.encrypt((SaltAndPepper.pepper +  password) + SaltAndPepper.salt) + "' AND `activated` = 1");
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM `account` WHERE `email` = '" + email + "' AND `password` = '" + PwEncryptionTool.encrypt((SaltAndPepper.pepper +  password) + SaltAndPepper.salt) + "' AND `activated` = 1");
             Account account = new Account();
 
             while (resultSet.next()) {
@@ -83,6 +89,7 @@ public class Login {
                 account.setLastname(resultSet.getString("lastname"));
                 account.setEmail(resultSet.getString("email"));
                 account.setAccountId(resultSet.getInt("id"));
+                account.setRole(resultSet.getString("role"));
             }
 
             resultSet.close();

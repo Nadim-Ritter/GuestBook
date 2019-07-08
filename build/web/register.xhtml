@@ -48,31 +48,33 @@
             #radioContainer{
                 margin-bottom: 10px;
             }
+            
+            #passInfo{
+                font-size: 10px;
+            }
         </style>
 
         <script type="text/javascript">
-            let adminTrue = false;
-            
-            let uncheckBoxes = function (var_id) {
-                let securityCodeField = document.getElementById("securityCodeField");
+            let securityCodeField;
 
-                if (var_id === "benutzerRadio") {
-                    securityCodeField.style.display = 'none';
-                } else if (var_id === "adminRadio") {
-                    console.log("test");
-                    adminTrue = true;
-                    securityCodeField.style.display = 'inline';
-                } else if (var_id === "leserRadio") {
-                    securityCodeField.style.display = 'none';
 
-                }
+            document.addEventListener('DOMContentLoaded', function () {
+                securityCodeField = document.getElementById("securityCodeField");
+                hideSecurityCodeField();
+                
+            }, false);
+
+
+            let hideSecurityCodeField = function () {
+                securityCodeField.style.display = 'none';
             };
 
-            let getVars = function () {
-                if(adminTrue){
-                    document.getElementById("j_idt22:x").value = true;
-                }else{
-                    document.getElementById("j_idt22:x").value = false;
+            let setSecurityField = function (var_id) {
+                
+                if (var_id === "Leser" || var_id === "Benutzer") {
+                    securityCodeField.style.display = 'none';
+                } else if (var_id === "Admin") {
+                    securityCodeField.style.display = 'inline';
                 }
             };
         </script>
@@ -99,23 +101,13 @@
 
         <div class="register-form">
             <h:form>
-                <h:inputHidden id="x" value="#{Register.adminRole}" />
                 <h2 class="text-center">Account erstellen</h2>  
                 <!-- role radio buttons -->
-                <div id="radioContainer">
-                    <div class="custom-control custom-radio radioGroup">
-                        <input type="radio" class="custom-control-input" id="benutzerRadio" onclick="uncheckBoxes(this.id)" name="radios"/>
-                        <label class="custom-control-label" for="benutzerRadio">Benutzer</label>
-                    </div>
-                    <div class="custom-control custom-radio radioGroup">
-                        <input type="radio" class="custom-control-input" id="adminRadio" onclick="uncheckBoxes(this.id)" name="radios"/>
-                        <label class="custom-control-label" for="adminRadio">Admin</label>
-                    </div>
-                    <div class="custom-control custom-radio radioGroup">
-                        <input type="radio" class="custom-control-input" id="leserRadio" onclick="uncheckBoxes(this.id)" name="radios"/>
-                        <label class="custom-control-label" for="leserRadio">Leser</label>
-                    </div>
-                </div>
+                <h:selectOneRadio required="true" value="#{Register.role}" onclick="setSecurityField(this.value)">
+                    <f:selectItem id="benutzerRadio" itemValue="Benutzer" itemLabel="Benutzer" />
+                    <f:selectItem id="adminRadio" itemValue="Admin" itemLabel="Admin" />
+                    <f:selectItem id="leserRadio" itemValue="Leser" itemLabel="Leser" />
+                </h:selectOneRadio>
                 <!-- ======================= -->
                 <div class="form-group">
                     <h:inputText styleClass="form-control" a:placeholder="Vorname" required="true" value="#{Register.firstname}"/>
@@ -127,13 +119,16 @@
                     <h:inputText styleClass="form-control" a:placeholder="Email" required="true" value="#{Register.email}"/>
                 </div>
                 <div class="form-group">
-                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort" required="true" value="#{Register.password}"/>
+                    <span id="passInfo">Passwort muss mind. 7 Zeichen enthalten, ein Grossbuchstaben und ein Sonderzeichen</span>
+                    <p:password styleClass="form-control" a:placeholder="Passwort" required="true" value="#{Register.password}" feedback="true" />
+<!--                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort" required="true" value="#{Register.password}"/>-->
                 </div>
                 <div class="form-group">
-                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort bestätigen" required="true" value="#{Register.passwordCheck}"/>
+                    <p:password styleClass="form-control" a:placeholder="Passwort bestätigen" required="true" value="#{Register.passwordCheck}" feedback="true" />
+<!--                    <h:inputSecret styleClass="form-control" a:placeholder="Passwort bestätigen" required="true" value="#{Register.passwordCheck}"/>-->
                 </div>
                 <div class="form-group" id="securityCodeField" >
-                    <h:inputText styleClass="form-control" a:placeholder="Security Code" required="true"/>
+                    <h:inputText styleClass="form-control" a:placeholder="Security Code" />
                 </div>
                 <div class="form-group">
                     <div class="g-recaptcha" data-sitekey="6LfUJaIUAAAAAFZoZMujTCXUUw_cGkA6urZAJGOE"></div>   

@@ -14,8 +14,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.mail.MessagingException;
+import java.util.logging.Logger;
 
 import objects.Account;
+import objects.SaltAndPepper;
 import passwordencryption.PwEncryptionTool;
 
 @ManagedBean(name = "Register")
@@ -28,44 +30,50 @@ public class Register {
     private String password;
     private String passwordCheck;
     private String uuid;
-    private boolean adminRole;
+    private String role;
 
     public String submit_form() {
-        if (password.equals(passwordCheck)) {
-            try {
-                String gRecaptchaResponse = FacesContext.getCurrentInstance().
-                        getExternalContext().getRequestParameterMap().get("g-recaptcha-response");
-                boolean verify = VerifyRecaptcha.verify(gRecaptchaResponse);
-                if (verify) {
-                    FacesContext context = FacesContext.getCurrentInstance();
-                    context.addMessage(null, new FacesMessage("sucees Captcha"));
-                    createAccount();
-                    return "register";
-                } else {
-                    FacesContext context = FacesContext.getCurrentInstance();
-                    context.addMessage(null, new FacesMessage("Select Captcha"));
-                    return null;
+        if (password.length() >= 7) {
+            if (password.equals(passwordCheck)) {
+                try {
+                    String gRecaptchaResponse = FacesContext.getCurrentInstance().
+                            getExternalContext().getRequestParameterMap().get("g-recaptcha-response");
+                    boolean verify = VerifyRecaptcha.verify(gRecaptchaResponse);
+                    if (verify) {
+                        FacesContext context = FacesContext.getCurrentInstance();
+                        context.addMessage(null, new FacesMessage("sucees Captcha"));
+                        createAccount();
+                        return "register";
+                    } else {
+                        FacesContext context = FacesContext.getCurrentInstance();
+                        context.addMessage(null, new FacesMessage("Select Captcha"));
+                        return null;
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
                 }
-            } catch (Exception e) {
-                System.out.println(e);
+                return null;
+
+            } else {
+                FacesContext context = FacesContext.getCurrentInstance();
+                context.addMessage(null, new FacesMessage("Die Passwörter sind nicht gleich"));
+                return null;
             }
-            return null;
 
         } else {
             FacesContext context = FacesContext.getCurrentInstance();
-            context.addMessage(null, new FacesMessage("Die Passwörter sind nicht gleich"));
+            context.addMessage(null, new FacesMessage("Das Passwort erreicht nicht die gewünschten Anforderungen"));
             return null;
+
         }
 
     }
 
     public void createAccount() throws SQLException, MessagingException, Exception {
-        
-        System.out.println();
 
         UUID uuid = UUID.randomUUID();
 
-        Account account = new Account(firstname, lastname, email, password, false, uuid.toString());
+        Account account = new Account(firstname, lastname, email, password, false, uuid.toString(), role);
 
         if (insertIntoDB(account)) {
             FacesContext context = FacesContext.getCurrentInstance();
@@ -75,6 +83,7 @@ public class Register {
             FacesContext context = FacesContext.getCurrentInstance();
             context.addMessage(null, new FacesMessage("Die Registrierung ist fehlgeschlagen"));
         }
+
     }
 
     public boolean insertIntoDB(Account account) throws SQLException, MessagingException, Exception {
@@ -83,10 +92,12 @@ public class Register {
 
             String connectionURL = "jdbc:mysql://localhost/guestbook";
             Connection connection = DriverManager.getConnection(connectionURL, "root", "");
-            
+
+            String passwordWithSalt = PwEncryptionTool.encrypt((SaltAndPepper.pepper + account.getPassword()) + SaltAndPepper.salt);
+
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + PwEncryptionTool.encrypt(account.getPassword()) + "', " + 0 + ", '" + account.getUuid() + "')");
-            System.out.println("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + PwEncryptionTool.encrypt(account.getPassword()) + "', " + 0 + ", '" + account.getUuid() + "')");
+            stmt.executeUpdate("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`, `role`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + passwordWithSalt + "', " + 0 + ", '" + account.getUuid() + "', '" + account.getRole() + "')");
+            System.out.println("INSERT INTO `account` (`firstname`, `lastname`, `email`, `password`, `activated`, `uuid`, `role`) VALUES ('" + account.getFirstname() + "', '" + account.getLastname() + "', '" + account.getEmail() + "', '" + passwordWithSalt + "', " + 0 + ", '" + account.getUuid() + "', '" + account.getRole() + "')");
 
             MailHandler mailHandler = new MailHandler();
             mailHandler.sendConfirmationMail(account);
@@ -95,6 +106,10 @@ public class Register {
             //entries.close();
             stmt.close();
             connection.close();
+            
+            Logger logger = Logger.getLogger(Register.class.getName());
+            logger.info("New Account registred " + account.getEmail());
+            
             return true;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -179,14 +194,12 @@ public class Register {
         this.passwordCheck = passwordCheck;
     }
 
-    public boolean isAdminRole() {
-        return adminRole;
+    public String getRole() {
+        return role;
     }
 
-    public void setAdminRole(boolean adminRole) {
-        this.adminRole = adminRole;
+    public void setRole(String role) {
+        this.role = role;
     }
-    
-    
 
 }

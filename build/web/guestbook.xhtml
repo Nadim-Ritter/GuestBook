@@ -5,7 +5,8 @@
       xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"	
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     <h:head>
         <title>Guestbook</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -22,7 +23,7 @@
                 console.log("2: " + document.getElementById('j_idt21:okeyBox').checked);
                 console.log("3: " + document.getElementById('j_idt21:badBox').checked);
             };
-            
+
             var uncheckBoxes = function (var_id) {
                 if (document.getElementById(var_id).checked) {
                     document.getElementById(var_id + "Img").style.background = "#bafdff";
@@ -81,9 +82,14 @@
             .img{
                 width: 25%;
             }
-            
+
             .imgOutput{
                 width: 15%;
+            }
+
+            .info{
+                text-align: center;
+                font-size: 15px;
             }
 
         </style>
@@ -108,14 +114,22 @@
             </div>
         </nav>
 
-        <div class="newentry-form">
-            <h:form rendered="#{Login.sessionBean.loggedIn}">
-                <h2 class="text-center">Neuer Eintrag ins Gästebuch erstellen</h2>    
+        <div class="info">
+            <c:if test="#{SessionBean.account.role eq 'Leser'}">
+                <h:outputText value="Sie sind nicht autorisiert um Einträge zu erstellen."  />
+            </c:if>
+        </div>
+        
 
-                <!--status radio buttons -->
-                <br/>
-                <h6 class="text-center">Wählen sie ihren Status</h6>   
-                
+        <h:panelGroup rendered="#{SessionBean.account.role ne 'Leser'}">
+            <div class="newentry-form">
+                <h:form rendered="#{Login.sessionBean.loggedIn}">
+                    <h2 class="text-center">Neuer Eintrag ins Gästebuch erstellen</h2>    
+
+                    <!--status radio buttons -->
+                    <br/>
+                    <h6 class="text-center">Wählen sie ihren Status</h6>   
+
                     <h:panelGrid styleClass="text-center" columns="3">   
                         <h:column>
                             <h:selectBooleanCheckbox style="display: none" onclick="uncheckBoxes(this.id)" value="#{guestbookHandler.statusGood}" id="goodBox" />
@@ -147,8 +161,11 @@
                         <h:commandButton styleClass="btn btn-primary btn-block" value="Senden" action="#{guestbookHandler.createGuestBookEntry()}"/>
                     </div>  
                     <p:messages/>
-            </h:form>
-        </div>  
+                </h:form>
+            </div>  
+
+        </h:panelGroup>
+
 
         <h2 class="text-center">Gästebuch Einträge</h2>
         <ui:repeat var="entry" value="#{guestbookHandler.guestBookEntries}">
